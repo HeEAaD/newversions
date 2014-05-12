@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+
+import urllib2
+import json
+import re
+
+TAGS_URL = 'https://bitbucket.org/api/1.0/repositories/multicoreware/x265/tags/'
+
+response = urllib2.urlopen(TAGS_URL)
+tags = json.load(response)
+tags = {k: v for k, v in tags.iteritems() if re.match(r'([0-9.]+)+', k) != None}
+
+print sorted(tags.keys())[-1]

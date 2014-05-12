@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+
+import urllib2
+import re
+
+DOWNLOAD_PAGE_URL = 'http://www.rarlab.com/rar_add.htm'
+response = urllib2.urlopen(DOWNLOAD_PAGE_URL)
+html = response.read()
+
+version = re.search(r'\"http\:\/\/(www\.)?rarlab\.com\/rar\/unrarsrc.*?\"',html).group(0).split('-')[1]
+version = re.match(r'([0-9]+.?)+',version).group(0)
+version = version[0:-1] if version.endswith('.') else version
+
+print version

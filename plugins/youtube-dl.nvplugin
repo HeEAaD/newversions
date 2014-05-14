@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+
+import urllib2
+import json
+
+PYPI_URL = 'http://pypi.python.org/pypi/youtube_dl/json'
+
+response = urllib2.urlopen(PYPI_URL)
+pypi_info = json.load(response)
+version = pypi_info['info']['version']
+print version

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+REPO='git://source.ffmpeg.org/ffmpeg.git'
+
+git ls-remote --tags $REPO | grep refs/tags/n | tail -n1 | cut -f 2 | cut -c 12- | tr -d '^{}'

@@ -8,6 +8,6 @@ TAGS_URL = 'https://bitbucket.org/api/1.0/repositories/multicoreware/x265/tags/'
 
 response = urllib2.urlopen(TAGS_URL)
 tags = json.load(response)
-tags = {k: v for k, v in tags.iteritems() if re.match(r'([0-9.]+)+', k) != None}
-
-print sorted(tags.keys())[-1]
+tags = sorted(tags.items(), key=lambda tag: tag[1]['timestamp'], reverse=True)
+index = 1 if tags[0][0] == 'tip' and len(tags) > 1 else 0
+print tags[index][0]

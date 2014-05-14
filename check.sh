@@ -3,11 +3,12 @@
 VERSIONS_FILE='versions.csv'
 TMP_VERSIONS_FILE='/tmp/newversions.tmp'
 PLUGIN_DIR='plugins'
+PROWL_API_KEY='<Your Prowl API key here>'
 
 function inform_user () {
 	local name=$1
 	local version=$2
-	echo "New Version for $name ($version)."
+	curl -s -d "apikey=$PROWL_API_KEY&application=New Version&event=$name has new version: $version" https://api.prowlapp.com/publicapi/add > /dev/null
 }
 
 for plugin in $PLUGIN_DIR/*.nvplugin; do
@@ -30,5 +31,3 @@ for plugin in $PLUGIN_DIR/*.nvplugin; do
 	fi
 
 done
-
-

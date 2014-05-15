@@ -33,14 +33,14 @@ for plugin in $PLUGIN_DIR/*.nvplugin; do
 	if [[ -z "$versions" ]]; then
 		versions="$name,$version"
 	else
-		oldversion=$(echo "$versions" | grep "^$name," | cut -d ',' -f 2- | head -n1 )
+		oldversion=$(echo -e "$versions" | grep "^$name," | cut -d ',' -f 2- | head -n1 )
 
 		if [[ $oldversion == $version ]];then
 			continue
 		fi
 
-		versions=$(echo "$versions" | grep -v "^$name,")
-		versions=$(echo -e "$versions\n$name,$version")
+		versions=$(echo -e "$versions" | grep -v "^$name,")
+		versions="$versions\n$name,$version"
 
 		if [[ -n $oldversion ]] && [[ $oldversion != $version ]]; then
 			inform_user $name $version

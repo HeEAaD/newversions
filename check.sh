@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 VERSIONS_FILE='versions.csv'
-TMP_VERSIONS_FILE='/tmp/newversions.tmp'
 PLUGIN_DIR='plugins'
 PROWL_API_KEY_FILE='prowl_api_key.conf'
 
@@ -18,6 +17,10 @@ if [[ -z "$PROWL_API_KEY" ]] || [[ "$PROWL_API_KEY" == "<Your Prowl API key here
 	exit 1
 fi
 
+if [[ -e $VERSIONS_FILE ]]; then
+	versions=$(< $VERSIONS_FILE)
+fi
+
 for plugin in $PLUGIN_DIR/*.nvplugin; do
 
 	name=$(basename $plugin | rev | cut -c 10- | rev)
@@ -27,18 +30,23 @@ for plugin in $PLUGIN_DIR/*.nvplugin; do
 		continue
 	fi
 
-	if [[ -e "$VERSIONS_FILE" ]]; then
-		oldversion=$(grep "^$name," "$VERSIONS_FILE" | cut -d ',' -f 2- | head -n1 )
-		if [[ -z $oldversion ]]; then
-			echo "$name,$version" >> "$VERSIONS_FILE"
-		elif [[ $oldversion != $version ]]; then
-			grep -v "^$name," "$VERSIONS_FILE" > "$TMP_VERSIONS_FILE"
-			echo "$name,$version" >> "$TMP_VERSIONS_FILE"
-			mv "$TMP_VERSIONS_FILE" "$VERSIONS_FILE"
+	if [[ -z "$versions" ]]; then
+		versions="$name,$version"
+	else
+		oldversion=$(echo "$versions" | grep "^$name," | cut -d ',' -f 2- | head -n1 )
+
+		if [[ $oldversion == $version ]];then
+			continue
+		fi
+
+		versions=$(echo "$versions" | grep -v "^$name,")
+		versions=$(echo -e "$versions\n$name,$version")
+
+		if [[ -n $oldversion ]] && [[ $oldversion != $version ]]; then
 			inform_user $name $version
 		fi
-	else
-		echo "$name,$version" > "$VERSIONS_FILE"
 	fi
 
 done
+
+echo -e "$versions" > "$VERSIONS_FILE"
